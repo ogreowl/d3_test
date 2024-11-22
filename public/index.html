@@ -1,0 +1,39 @@
+// public/index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <h2>Sales Data</h2>
+    <button onclick="updateData()">Refresh</button>
+    <div id="chart"></div>
+    <script>
+        const svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", 400)
+            .attr("height", 300);
+
+        function updateData() {
+            fetch('/api/data')
+                .then(res => res.json())
+                .then(data => {
+                    const bars = svg.selectAll("rect").data(data);
+                    
+                    bars.enter()
+                        .append("rect")
+                        .merge(bars)
+                        .attr("x", (d, i) => i * 100 + 50)
+                        .attr("y", d => 300 - d.sales)
+                        .attr("width", 50)
+                        .attr("height", d => d.sales)
+                        .attr("fill", "steelblue");
+                        
+                    bars.exit().remove();
+                });
+        }
+        
+        updateData();
+    </script>
+</body>
+</html>
